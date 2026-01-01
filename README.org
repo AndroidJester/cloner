@@ -1,0 +1,11 @@
+#+ title: Cloner
+* Introduction
+A project for simply allowing me to easily clone repositories without changing the which ssh source I use every single time
+
+* Building
+#+begin_src sh
+clang -o cloner main.c
+#+end_src
+
+* Will it work?
+Nope, unless you change some values later
