@@ -6,14 +6,14 @@
 #define MAX_SIZE 1024
 
 #define WHITE "\033[37m"
-#define GREEN "\033[35m"
+#define BLUE "\033[34m"
 #define ORANGE "\033[32m"
 #define RED "\033[31m"
 #define RESET "\033[0m"
 
 #define INFORMATION(x) printf(RESET x "\n")
-#define INFO(x, ...) printf(GREEN "[+] " x "\n" RESET, __VA_ARGS__)
-#define WARN(x, ...) printf(ORANGE "[-] " x "\n" RESET, __VA_ARGS__)
+#define INFO(x, ...) printf(BLUE  "[+] " x RESET "\n", __VA_ARGS__)
+#define WARN(x, ...) printf(ORANGE "[-] " x RESET "\n", __VA_ARGS__)
 #define ERROR(x) fprintf(stderr, RED "[ERROR] " x RESET)
 
 typedef enum { WORK, CYBER } WorkType;
@@ -24,13 +24,14 @@ typedef enum {
   SSH_GIT,
 } ConnectionType;
 
-void print_info() {
+void print_help() {
   INFORMATION("Welcome to Cloner");
   INFORMATION("ARGS: cloner [OPTIONS] URL [DESTINATION]");
 
   INFORMATION("\n[OPTIONS]");
-  INFORMATION("--work | -w            Work SSH");
+  INFORMATION("--work  | -w            Work SSH");
   INFORMATION("--cyber | -c           Cyber SSH(default)");
+  INFORMATION("--help  | -h             Display this help message");
 
   INFORMATION("\n[DESTINATION]");
   INFORMATION("Default Directory: ~/.cloner");
@@ -67,6 +68,7 @@ void split_url(char *url, WorkType workType, char *destination) {
 
   } else if (strstr(url, "ssh://")) {
     ERROR("NOT YET IMPLEMENTED");
+    exit(1);
     /* type = SSH; */
     /* protocol = strtok(url, ":"); */
     /* /\* strtok(NULL, "/"); *\/ */
@@ -84,7 +86,7 @@ void split_url(char *url, WorkType workType, char *destination) {
   strncat(new_url, "@", 1);
   // Determine Stuff
   if (workType == CYBER) {
-    site = "cybgit";
+    site = "cybrgit";
   } else {
     site = "softgit";
   }
@@ -95,6 +97,7 @@ void split_url(char *url, WorkType workType, char *destination) {
   strncat(new_url, repo_user, strlen(repo_user));
   strncat(new_url, "/", 1);
   strncat(new_url, repository, strlen(repository));
+  strncat(new_url, ".git", strlen(repository));
   INFO("NEW_URL: %s", new_url);
 
   size_t dest_string_len = strnlen(destination, MAX_SIZE);
@@ -108,6 +111,11 @@ void split_url(char *url, WorkType workType, char *destination) {
   // dest_loc = strcat(destination, repository); //, ));
   sprintf(dest_loc, "%s/%s", destination, repository);
   INFO("DEST_LOC: %s\n", dest_loc);
+
+  // printf("RESET\n");
+  // printf("RESET\n");
+
+
 
   execl("/bin/git", "git", "clone", "--progress", new_url, dest_loc, NULL);
 }
@@ -126,10 +134,14 @@ void parse_arguments(int argc, char **argv) {
   /* INFO("ARG3: %s", argv[2]); */
 
   if (argc == 1) {
-    print_info();
+    print_help();
   }
 
   if (argc == 2) {
+  if (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0) {
+    print_help();
+    exit(0);
+  }
     type = WORK;
     URL = argv[1];
     split_url(URL, type, destination);
@@ -156,8 +168,6 @@ void parse_arguments(int argc, char **argv) {
       type = CYBER;
       INFO("TYPE: CYBER\n", NULL);
     }
-
-
 
     split_url(URL, type, destination);
   }
