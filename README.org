@@ -1,4 +1,4 @@
-#+ title: Cloner
+#+title: Cloner
 * Introduction
 A project for simply allowing me to easily clone repositories without changing the which ssh source I use every single time
 
